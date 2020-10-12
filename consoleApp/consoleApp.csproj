@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\lcscToaltium\lcsclib.csproj" />
+    <ProjectReference Include="..\lcsclib\lcsclib.csproj" />
   </ItemGroup>
 
 </Project>

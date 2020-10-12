@@ -23,4 +23,46 @@
         SolderMaskExpansion,
         unknow2
     }
+    public enum ARCoffsets
+    {
+        command,
+        stroke_width,
+        layer_id,
+        net,
+        path_string,
+        helper_dots,
+        id,
+        locked
+    }
+    public enum CIRCLEoffsets
+    {
+        command,
+        center_x,
+        center_y,
+        radius,
+        stroke_width,
+        layer_id,
+        id,
+        locked
+    }
+    public enum HOLEoffsets
+    {
+        command,
+        center_x,
+        center_y,
+        radius,
+        id,
+        locked
+    }
+    public enum TRACKoffsets
+    {
+        command,
+        stroke_width,
+        layer_id,
+        net,
+        points,
+        id,
+        locked
+    }
+
 }

@@ -13,8 +13,10 @@ namespace consoleApp
         {
             await RequestAndSave("https://easyeda.com/api/components/8dc274d742c945d894162854d2ea79f5");
             await RequestAndSave("https://easyeda.com/api/components/0be27f9ebfef4a48b228771721089682");
-            await RequestAndSave("https://easyeda.com/api/components/8f1fa1aaeeff441a87e10ee714a50c0d");
             await RequestAndSave("https://easyeda.com/api/components/3ae51f9fa3264b7ab826ce43677ca53e");
+            await RequestAndSave("https://easyeda.com/api/components/437735bee9444a5d9dd435521a21a6af");
+            Console.WriteLine("press any key to disappear");
+            Console.ReadKey();
         }
 
         private static async Task RequestAndSave(string requestStr)
@@ -28,17 +30,7 @@ namespace consoleApp
                 var pcbComponent = Converters.FootprintResponseToPcbComponent(component);
                 Converters.SavePcbComponentToFile(pcbComponent);
             }
+            Console.WriteLine("request is: {0}\nresponse code: {1}", requestStr, response.code);
         }
     }
 }
-
-/*public static T ToObject<T>(this JsonElement element)
-{
-    var json = element.GetRawText();
-    return JsonSerializer.Deserialize<T>(json);
-}
-public static T ToObject<T>(this JsonDocument document)
-{
-    var json = document.RootElement.GetRawText();
-    return JsonSerializer.Deserialize<T>(json);
-}*/

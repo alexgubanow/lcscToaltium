@@ -1,0 +1,3 @@
+[submodule "AltiumSharp"]
+	path = AltiumSharp
+	url = https://github.com/issus/AltiumSharp.git

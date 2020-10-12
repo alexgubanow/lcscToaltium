@@ -155,7 +155,8 @@ namespace lcsclib
                         HoleSize = HoleSize,
                         HoleShape = HoleShape,
                         HoleSlotLength = HoleSlotLengthCoord,
-                        HoleRotation = holeAngle
+                        HoleRotation = holeAngle,
+                        IsPlated = shape[(int)PADoffsets.Plated] == "Y"
                     });
                 }
                 else if (shape[0] == "ARC")

@@ -77,7 +77,7 @@ namespace lcsclib
                     return PcbPadShape.Round;
             }
         }
-        
+
         private static List<CoordPoint> TrackPointsToListXY(string points, double zeroX, double zeroY)
         {
             string[] pointsArray = points.Split(' ');
@@ -140,7 +140,7 @@ namespace lcsclib
                     }
                     else
                     {
-                        padTemplate = LCSCLayerAltiumLayerMap[shape[(int)PADoffsets.layer_id]] == 
+                        padTemplate = LCSCLayerAltiumLayerMap[shape[(int)PADoffsets.layer_id]] ==
                             Layer.TopLayer ? PcbPadTemplate.SmtTop : PcbPadTemplate.SmtBottom;
                     }
                     pcbComp.Add(new PcbPad(padTemplate)
@@ -162,7 +162,11 @@ namespace lcsclib
                 else if (shape[0] == "ARC")
                 {
                     double.TryParse(shape[(int)ARCoffsets.stroke_width], out double stroke_width);
-                    LCSCarcConverter.ArcParams arc = LCSCarcConverter.ParseArcPath(shape[(int)ARCoffsets.path_string]);
+                    if (LCSCarcConverter.TryParseArcPath(shape[(int)ARCoffsets.path_string], out LCSCarcConverter.SvgArcPath svgArc) != true)
+                    {
+                        throw new Exception("failed to parse arc parameters");
+                    }
+                    var arc = LCSCarcConverter.SvgArcPathToArc(svgArc);
                     pcbComp.Add(new PcbArc
                     {
                         Layer = LCSCLayerAltiumLayerMap[shape[(int)ARCoffsets.layer_id]],
@@ -213,16 +217,27 @@ namespace lcsclib
                         Width = Coord.FromMils(stroke_width)
                     });
                 }
-                //else if (shape[0] == "RECT")
-                //{
-                //    double.TryParse(shape[(int)TRACKoffsets.stroke_width], out double stroke_width);
-                //    pcbComp.Add(new PcbMetaTrack
-                //    {
-                //        Layer = Layer.TopOverlay,
-                //        Vertices = TrackPointsToListXY(shape[(int)TRACKoffsets.points], zero_x, zero_y),
-                //        Width = Coord.FromMils(stroke_width)
-                //    });
-                //}
+                else if (shape[0] == "RECT")
+                {
+                    double.TryParse(shape[(int)RECToffsets.x], out double x);
+                    double.TryParse(shape[(int)RECToffsets.y], out double y);
+                    double.TryParse(shape[(int)RECToffsets.width], out double width);
+                    double.TryParse(shape[(int)RECToffsets.height], out double height);
+                    double.TryParse(shape[(int)RECToffsets.stroke_width], out double stroke_width);
+                    pcbComp.Add(new PcbMetaTrack
+                    {
+                        Layer = Layer.TopOverlay,
+                        Vertices = new List<CoordPoint>()
+                        {
+                            CoordPoint.FromMils((Coord)LCSCcoordToMil(x - zero_x), 0 - (Coord)LCSCcoordToMil(y - zero_y)),
+                            CoordPoint.FromMils((Coord)LCSCcoordToMil(x - zero_x + width), 0 - (Coord)LCSCcoordToMil(y - zero_y)),
+                            CoordPoint.FromMils((Coord)LCSCcoordToMil(x - zero_x + width), 0 - (Coord)LCSCcoordToMil(y - zero_y + height)),
+                            CoordPoint.FromMils((Coord)LCSCcoordToMil(x - zero_x), 0 - (Coord)LCSCcoordToMil(y - zero_y + height)),
+                            CoordPoint.FromMils((Coord)LCSCcoordToMil(x - zero_x), 0 - (Coord)LCSCcoordToMil(y - zero_y))
+                        },
+                        Width = Coord.FromMils(stroke_width)
+                    });
+                }
             }
             pcbComp.Description = component.title;
             pcbComp.ItemGuid = component.uuid;

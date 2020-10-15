@@ -24,13 +24,20 @@ namespace consoleApp
             HttpClient client = new HttpClient();
             var responseString = await client.GetStringAsync(requestStr);
             var response = JsonSerializer.Deserialize<lcsclib.GenericResponse>(responseString);
+            Console.WriteLine("request is: {0}\nresponse code: {1}", requestStr, response.code);
             if (response.success == true)
             {
                 var component = JsonSerializer.Deserialize<lcsclib.FootprintResponse>(response.result.GetRawText());
-                var pcbComponent = Converters.FootprintResponseToPcbComponent(component);
-                Converters.SavePcbComponentToFile(pcbComponent);
+                try
+                {
+                    var pcbComponent = Converters.FootprintResponseToPcbComponent(component);
+                    Converters.SavePcbComponentToFile(pcbComponent);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("failed to process: {0}", ex.Message);
+                }
             }
-            Console.WriteLine("request is: {0}\nresponse code: {1}", requestStr, response.code);
         }
     }
 }

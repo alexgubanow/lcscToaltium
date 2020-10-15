@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace lcsclib
@@ -26,6 +27,7 @@ namespace lcsclib
             public double x2;
             public double y2;
         }
+
         private static double Radian(double ux, double uy, double vx, double vy)
         {
             var dot = ux * vx + uy * vy;
@@ -119,35 +121,66 @@ namespace lcsclib
                 center_x = cx,
                 center_y = cy,
                 startAngle = startAngle,
-                endAngle = endAngle
+                endAngle = endAngle,
+                radius = svgArc.rx
             };
 
             return outputObj;
         }
-        public static ArcParams ParseArcPath(string ArcPath)
+        public static bool TryParseArcPath(string ArcPath, out SvgArcPath arc)
         {
-            var arc = new ArcParams();
             string[] strArray = ArcPath.Split(' ');
             if (strArray[0] == "M" && strArray[3] == "A")
             {
-                SvgArcPath tmp;
-                double.TryParse(strArray[1], out tmp.x1);//rx
-                double.TryParse(strArray[2], out tmp.y1);//ry
-                double.TryParse(strArray[4], out tmp.rx);//rx
-                double.TryParse(strArray[5], out tmp.ry);//ry
-                double.TryParse(strArray[6], out tmp.phi);//x-axis-rotation
-                bool.TryParse(strArray[7], out tmp.fA);//large-arc-flag
-                bool.TryParse(strArray[8], out tmp.fS);//sweep-flag
-                double.TryParse(strArray[9], out tmp.x2);//x
-                double.TryParse(strArray[10], out tmp.y2);//y
-                arc = svgArcToArcParam(tmp);
-                double.TryParse(strArray[4], out arc.radius);
+                double.TryParse(strArray[1], out arc.x1);//x1
+                double.TryParse(strArray[2], out arc.y1);//y1
+                double.TryParse(strArray[4], out arc.rx);//rx
+                double.TryParse(strArray[5], out arc.ry);//ry
+                double.TryParse(strArray[6], out arc.phi);//x-axis-rotation
+                bool.TryParse(strArray[7], out arc.fA);//large-arc-flag
+                bool.TryParse(strArray[8], out arc.fS);//sweep-flag
+                double.TryParse(strArray[9], out arc.x2);//x2
+                double.TryParse(strArray[10], out arc.y2);//y2
+                return true;
             }
-            else if (strArray[0].StartsWith("M") && strArray[3].StartsWith("A"))
+            else if (strArray[0].StartsWith("M") && strArray[2].StartsWith("A"))
             {
-
+                double.TryParse(strArray[0][1..], out arc.x1);//x1
+                double.TryParse(strArray[1], out arc.y1);//y1
+                double.TryParse(strArray[2][1..], out arc.rx);//rx
+                double.TryParse(strArray[3], out arc.ry);//ry
+                double.TryParse(strArray[4], out arc.phi);//x-axis-rotation
+                bool.TryParse(strArray[5], out arc.fA);//large-arc-flag
+                bool.TryParse(strArray[6], out arc.fS);//sweep-flag
+                double.TryParse(strArray[7], out arc.x2);//x2
+                double.TryParse(strArray[8], out arc.y2);//y2
+                return true;
             }
-            return arc;
+            else
+            {
+                string[] twoParts = ArcPath.Split('A');
+                if (twoParts[0].StartsWith("M"))
+                {
+                    strArray = twoParts[0].Split(' ');
+                    double.TryParse(strArray[0][1..], out arc.x1);
+                    double.TryParse(strArray[1], out arc.y1);
+                    strArray = twoParts[1].Split(' ');
+                    double.TryParse(strArray[0], out arc.rx);
+                    double.TryParse(strArray[1], out arc.ry);
+                    double.TryParse(strArray[2], out arc.phi);
+                    bool.TryParse(strArray[3], out arc.fA);
+                    bool.TryParse(strArray[4], out arc.fS);
+                    double.TryParse(strArray[5], out arc.x2);
+                    double.TryParse(strArray[6], out arc.y2);
+                    return true;
+                }
+            }
+            arc = new SvgArcPath();
+            return false;
+        }
+        public static ArcParams SvgArcPathToArc(SvgArcPath svgArc)
+        {
+            return svgArcToArcParam(svgArc);
         }
     }
 }

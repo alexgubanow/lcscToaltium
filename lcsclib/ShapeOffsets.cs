@@ -64,5 +64,18 @@
         id,
         locked
     }
+    public enum RECToffsets
+    {
+        command,
+        x,
+        y,
+        width,
+        height,
+        layer_id,
+        id,
+        fill,
+        stroke_width,
+        locked
+    }
 
 }

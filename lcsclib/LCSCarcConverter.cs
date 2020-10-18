@@ -42,7 +42,7 @@ namespace lcsclib
         //conversion_from_endpoint_to_center_parameterization
         //sample :  svgArcToCenterParam(200,200,50,50,0,1,1,300,200)
         // x1 y1 rx ry φ fA fS x2 y2
-        private static ArcParams svgArcToArcParam(SvgArcPath svgArc)
+        private static ArcParams SvgArcToArcParam(SvgArcPath svgArc)
         {
             double cx, cy, startAngle, deltaAngle, endAngle;
             var PIx2 = Math.PI * 2.0;
@@ -120,8 +120,8 @@ namespace lcsclib
             { /* cx, cy, startAngle, deltaAngle */
                 center_x = cx,
                 center_y = cy,
-                startAngle = startAngle,
-                endAngle = endAngle,
+                startAngle = startAngle * (180 / Math.PI),
+                endAngle = endAngle * (180 / Math.PI),
                 radius = svgArc.rx
             };
 
@@ -137,8 +137,10 @@ namespace lcsclib
                 double.TryParse(strArray[4], out arc.rx);//rx
                 double.TryParse(strArray[5], out arc.ry);//ry
                 double.TryParse(strArray[6], out arc.phi);//x-axis-rotation
-                bool.TryParse(strArray[7], out arc.fA);//large-arc-flag
-                bool.TryParse(strArray[8], out arc.fS);//sweep-flag
+                int.TryParse(strArray[7], out int fA);//large-arc-flag
+                arc.fA = fA == 1;
+                int.TryParse(strArray[8], out int fS);//sweep-flag
+                arc.fS = fS == 1;
                 double.TryParse(strArray[9], out arc.x2);//x2
                 double.TryParse(strArray[10], out arc.y2);//y2
                 return true;
@@ -150,8 +152,10 @@ namespace lcsclib
                 double.TryParse(strArray[2][1..], out arc.rx);//rx
                 double.TryParse(strArray[3], out arc.ry);//ry
                 double.TryParse(strArray[4], out arc.phi);//x-axis-rotation
-                bool.TryParse(strArray[5], out arc.fA);//large-arc-flag
-                bool.TryParse(strArray[6], out arc.fS);//sweep-flag
+                int.TryParse(strArray[5], out int fA);//large-arc-flag
+                arc.fA = fA == 1;
+                int.TryParse(strArray[6], out int fS);//sweep-flag
+                arc.fS = fS == 1;
                 double.TryParse(strArray[7], out arc.x2);//x2
                 double.TryParse(strArray[8], out arc.y2);//y2
                 return true;
@@ -168,8 +172,10 @@ namespace lcsclib
                     double.TryParse(strArray[0], out arc.rx);
                     double.TryParse(strArray[1], out arc.ry);
                     double.TryParse(strArray[2], out arc.phi);
-                    bool.TryParse(strArray[3], out arc.fA);
-                    bool.TryParse(strArray[4], out arc.fS);
+                    int.TryParse(strArray[3], out int fA);
+                    arc.fA = fA == 1;
+                    int.TryParse(strArray[4], out int fS);
+                    arc.fS = fS == 1;
                     double.TryParse(strArray[5], out arc.x2);
                     double.TryParse(strArray[6], out arc.y2);
                     return true;
@@ -180,7 +186,7 @@ namespace lcsclib
         }
         public static ArcParams SvgArcPathToArc(SvgArcPath svgArc)
         {
-            return svgArcToArcParam(svgArc);
+            return SvgArcToArcParam(svgArc);
         }
     }
 }

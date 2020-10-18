@@ -128,14 +128,13 @@ namespace lcsclib
                         HoleSize = Coord.FromMils(LCSCcoordToMil(hole_radius)) * 2;
                         if (shape[(int)PADoffsets.Hole_Length] != "")
                         {
-                            HoleShape = PcbPadHoleShape.Slot;
                             double.TryParse(shape[(int)PADoffsets.Hole_Length], out double HoleSlotLength);
-                            HoleSlotLengthCoord = Coord.FromMils(LCSCcoordToMil(HoleSlotLength));
-                            holeAngle = 270;
-                        }
-                        else
-                        {
-                            HoleShape = PcbPadHoleShape.Round;
+                            if (HoleSlotLength > 0)
+                            {
+                                HoleShape = PcbPadHoleShape.Slot;
+                                HoleSlotLengthCoord = Coord.FromMils(LCSCcoordToMil(HoleSlotLength));
+                                holeAngle = 270;
+                            }
                         }
                     }
                     else

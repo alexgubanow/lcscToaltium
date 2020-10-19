@@ -225,7 +225,7 @@ namespace lcsclib
                     double.TryParse(shape[(int)RECToffsets.stroke_width], out double stroke_width);
                     pcbComp.Add(new PcbMetaTrack
                     {
-                        Layer = Layer.TopOverlay,
+                        Layer = LCSCLayerAltiumLayerMap[shape[(int)RECToffsets.layer_id]],
                         Vertices = new List<CoordPoint>()
                         {
                             CoordPoint.FromMils((Coord)LCSCcoordToMil(x - zero_x), 0 - (Coord)LCSCcoordToMil(y - zero_y)),
@@ -235,6 +235,44 @@ namespace lcsclib
                             CoordPoint.FromMils((Coord)LCSCcoordToMil(x - zero_x), 0 - (Coord)LCSCcoordToMil(y - zero_y))
                         },
                         Width = Coord.FromMils(stroke_width)
+                    });
+                }
+                else if (shape[0] == "SOLIDREGION")
+                {
+                    double.TryParse(shape[(int)SOLIDREGIONoffsets.points], out double width);
+                    SVGCommand.TryParse(shape[(int)SOLIDREGIONoffsets.points], out List<SVGCommand> points);
+                    List<CoordPoint> Outline = new List<CoordPoint>();
+                    for (int i = 0; i < points.Count; i++)
+                    {
+                        switch (points[i].CMD)
+                        {
+                            case 'M':
+                                if (points[i].ARG.Length < 2)
+                                {
+                                    throw new Exception("M svg path cmd should have 2 args");
+                                }
+                                Outline.Add(CoordPoint.FromMils(
+                                    (Coord)LCSCcoordToMil(points[i].ARG[0] - zero_x), 
+                                    0 - (Coord)LCSCcoordToMil(points[i].ARG[1] - zero_y)));
+                                break;
+                            case 'L':
+                                if (points[i].ARG.Length < 2)
+                                {
+                                    throw new Exception("L svg path cmd should have 2 args");
+                                }
+                                Outline.Add(CoordPoint.FromMils(
+                                    (Coord)LCSCcoordToMil(points[i].ARG[0] - zero_x),
+                                    0 - (Coord)LCSCcoordToMil(points[i].ARG[1] - zero_y)));
+                                break;
+                            default:
+                                throw new Exception("not expected svg path cmd");
+                        }
+                    }
+                    pcbComp.Add(new PcbRegion
+                    {
+                        Layer = LCSCLayerAltiumLayerMap[shape[(int)SOLIDREGIONoffsets.layer_id]],
+                        Outline = Outline,
+                        IsKeepOut = shape[(int)SOLIDREGIONoffsets.type] == "cutout"
                     });
                 }
             }

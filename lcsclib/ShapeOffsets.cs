@@ -77,5 +77,15 @@
         stroke_width,
         locked
     }
+    public enum SOLIDREGIONoffsets
+    {
+        command,
+        layer_id,
+        net,
+        points,
+        type,// solid/cutout/npth
+        id,
+        locked
+    }
 
 }
